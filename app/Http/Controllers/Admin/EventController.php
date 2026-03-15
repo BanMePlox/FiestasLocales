@@ -7,6 +7,7 @@ use App\Http\Requests\Admin\UpdateEventRequest;
 use App\Models\Event;
 use App\Models\Municipality;
 use App\Models\MusicGenre;
+use App\Notifications\EventApproved;
 use Illuminate\Http\Request;
 
 class EventController extends Controller
@@ -59,7 +60,13 @@ class EventController extends Controller
 
     public function approve(Event $event)
     {
+        $event->load('municipality');
         $event->update(['approved_at' => now()]);
+
+        // Notificar al autor si el evento fue propuesto por un usuario
+        if ($event->submitted_by && $event->submittedBy) {
+            $event->submittedBy->notify(new EventApproved($event));
+        }
 
         return back()->with('success', "Evento \"{$event->name}\" aprobado y publicado.");
     }
