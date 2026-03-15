@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\UpdateMunicipalityRequest;
 use App\Models\Municipality;
 use App\Models\Province;
 use Illuminate\Http\Request;
@@ -30,19 +31,11 @@ class MunicipalityController extends Controller
         return view('admin.municipalities.edit', compact('municipality', 'provinces'));
     }
 
-    public function update(Request $request, Municipality $municipality)
+    public function update(UpdateMunicipalityRequest $request, Municipality $municipality)
     {
-        $validated = $request->validate([
-            'name'        => 'required|string|max:150',
-            'province_id' => 'required|exists:provinces,id',
-            'lat'         => 'nullable|numeric',
-            'lng'         => 'nullable|numeric',
-            'population'  => 'nullable|integer|min:0',
-        ]);
+        $municipality->update($request->validated());
 
-        $municipality->update($validated);
-
-        return redirect()->route('admin.municipalities.index')
+        return redirect()->route('admin.municipios.index')
             ->with('success', 'Municipio actualizado.');
     }
 

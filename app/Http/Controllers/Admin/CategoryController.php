@@ -3,8 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\StoreCategoryRequest;
+use App\Http\Requests\Admin\UpdateCategoryRequest;
 use App\Models\Category;
-use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
@@ -20,18 +21,11 @@ class CategoryController extends Controller
         return view('admin.categories.create');
     }
 
-    public function store(Request $request)
+    public function store(StoreCategoryRequest $request)
     {
-        $validated = $request->validate([
-            'name'        => 'required|string|max:100|unique:categories,name',
-            'description' => 'nullable|string',
-            'color'       => 'nullable|string|max:7',
-            'icon'        => 'nullable|string|max:50',
-        ]);
+        Category::create($request->validated());
 
-        Category::create($validated);
-
-        return redirect()->route('admin.categories.index')
+        return redirect()->route('admin.categorias.index')
             ->with('success', 'Categoría creada correctamente.');
     }
 
@@ -40,18 +34,11 @@ class CategoryController extends Controller
         return view('admin.categories.edit', compact('category'));
     }
 
-    public function update(Request $request, Category $category)
+    public function update(UpdateCategoryRequest $request, Category $category)
     {
-        $validated = $request->validate([
-            'name'        => 'required|string|max:100|unique:categories,name,' . $category->id,
-            'description' => 'nullable|string',
-            'color'       => 'nullable|string|max:7',
-            'icon'        => 'nullable|string|max:50',
-        ]);
+        $category->update($request->validated());
 
-        $category->update($validated);
-
-        return redirect()->route('admin.categories.index')
+        return redirect()->route('admin.categorias.index')
             ->with('success', 'Categoría actualizada.');
     }
 
@@ -59,12 +46,12 @@ class CategoryController extends Controller
     {
         $category->delete();
 
-        return redirect()->route('admin.categories.index')
+        return redirect()->route('admin.categorias.index')
             ->with('success', 'Categoría eliminada.');
     }
 
     public function show(Category $category)
     {
-        return redirect()->route('admin.categories.index');
+        return redirect()->route('admin.categorias.index');
     }
 }

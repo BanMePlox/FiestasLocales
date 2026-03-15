@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\UpdateEventRequest;
 use App\Models\Event;
 use App\Models\Municipality;
 use App\Models\MusicGenre;
@@ -33,6 +34,7 @@ class EventController extends Controller
     public function show(Event $event)
     {
         $event->load('municipality.comarca', 'musicGenre', 'submittedBy');
+
         return view('admin.events.show', compact('event'));
     }
 
@@ -44,27 +46,15 @@ class EventController extends Controller
         return view('admin.events.edit', compact('event', 'municipalities', 'genres'));
     }
 
-    public function update(Request $request, Event $event)
+    public function update(UpdateEventRequest $request, Event $event)
     {
-        $validated = $request->validate([
-            'name'            => 'required|string|max:200',
-            'municipality_id' => 'required|exists:municipalities,id',
-            'music_genre_id'  => 'nullable|exists:music_genres,id',
-            'description'     => 'nullable|string|max:3000',
-            'starts_at'       => 'required|date',
-            'ends_at'         => 'nullable|date|after:starts_at',
-            'venue'           => 'required|string|max:200',
-            'address'         => 'nullable|string|max:300',
-            'price'           => 'nullable|numeric|min:0',
-            'min_age'         => 'nullable|integer|min:0|max:99',
-            'website_url'     => 'nullable|url|max:500',
-            'instagram_url'   => 'nullable|url|max:500',
-            'is_active'       => 'boolean',
-        ]);
+        $data              = $request->validated();
+        $data['is_active'] = $request->boolean('is_active');
 
-        $event->update($validated);
+        $event->update($data);
 
-        return redirect()->route('admin.eventos.index')->with('success', 'Evento actualizado.');
+        return redirect()->route('admin.eventos.index')
+            ->with('success', 'Evento actualizado.');
     }
 
     public function approve(Event $event)
@@ -78,6 +68,7 @@ class EventController extends Controller
     {
         $event->delete();
 
-        return redirect()->route('admin.eventos.index')->with('success', 'Evento eliminado.');
+        return redirect()->route('admin.eventos.index')
+            ->with('success', 'Evento eliminado.');
     }
 }

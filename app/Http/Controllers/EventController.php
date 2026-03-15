@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreEventRequest;
 use App\Models\Comarca;
 use App\Models\Event;
 use App\Models\Municipality;
 use App\Models\MusicGenre;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 
 class EventController extends Controller
 {
@@ -30,9 +29,9 @@ class EventController extends Controller
             $query->byMunicipality($request->municipio);
         }
 
-        $events    = $query->paginate(15)->withQueryString();
-        $comarcas  = Comarca::orderBy('name')->get();
-        $genres    = MusicGenre::orderBy('name')->get();
+        $events   = $query->paginate(15)->withQueryString();
+        $comarcas = Comarca::orderBy('name')->get();
+        $genres   = MusicGenre::orderBy('name')->get();
 
         return view('events.index', compact('events', 'comarcas', 'genres'));
     }
@@ -61,40 +60,27 @@ class EventController extends Controller
 
     public function create()
     {
+        $this->authorize('create', Event::class);
+
         $municipalities = Municipality::orderBy('name')->get();
         $genres         = MusicGenre::orderBy('name')->get();
 
         return view('events.create', compact('municipalities', 'genres'));
     }
 
-    public function store(Request $request)
+    public function store(StoreEventRequest $request)
     {
-        $validated = $request->validate([
-            'name'            => 'required|string|max:200',
-            'municipality_id' => 'required|exists:municipalities,id',
-            'music_genre_id'  => 'nullable|exists:music_genres,id',
-            'description'     => 'nullable|string|max:3000',
-            'starts_at'       => 'required|date|after:now',
-            'ends_at'         => 'nullable|date|after:starts_at',
-            'venue'           => 'required|string|max:200',
-            'address'         => 'nullable|string|max:300',
-            'price'           => 'nullable|numeric|min:0|max:999',
-            'min_age'         => 'nullable|integer|min:0|max:99',
-            'website_url'     => 'nullable|url|max:500',
-            'instagram_url'   => 'nullable|url|max:500',
-            'cover_image'     => 'nullable|image|max:3072',
-        ]);
+        $this->authorize('create', Event::class);
 
-        $imagePath = null;
-        if ($request->hasFile('cover_image')) {
-            $imagePath = $request->file('cover_image')->store('events', 'public');
-        }
+        $imagePath = $request->hasFile('cover_image')
+            ? $request->file('cover_image')->store('events', 'public')
+            : null;
 
-        Event::create(array_merge($validated, [
-            'submitted_by' => Auth::id(),
+        Event::create(array_merge($request->validated(), [
+            'submitted_by' => $request->user()->id,
             'cover_image'  => $imagePath,
             'is_active'    => true,
-            'approved_at'  => null, // Pendiente de aprobación
+            'approved_at'  => null,
         ]));
 
         return redirect()->route('events.index')
