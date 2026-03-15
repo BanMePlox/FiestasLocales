@@ -4,8 +4,32 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'FiestasLocales') — Comunitat Valenciana</title>
-    <meta name="description" content="@yield('description', 'Descubre el calendario de fiestas locales de la Comunitat Valenciana.')">
+
+    @php
+        $pageTitle       = trim(strip_tags(View::yieldContent('title', 'FiestasLocales')));
+        $pageDescription = trim(strip_tags(View::yieldContent('description', 'Descubre el calendario de fiestas locales de la Comunitat Valenciana.')));
+        $pageImage       = View::yieldContent('og_image', asset('images/og-default.png'));
+        $fullTitle       = $pageTitle === 'FiestasLocales' ? 'FiestasLocales — Comunitat Valenciana' : $pageTitle . ' — FiestasLocales';
+    @endphp
+
+    <title>{{ $fullTitle }}</title>
+    <meta name="description" content="{{ $pageDescription }}">
+
+    {{-- Open Graph --}}
+    <meta property="og:type"        content="website">
+    <meta property="og:site_name"   content="FiestasLocales">
+    <meta property="og:title"       content="{{ $fullTitle }}">
+    <meta property="og:description" content="{{ $pageDescription }}">
+    <meta property="og:image"       content="{{ $pageImage }}">
+    <meta property="og:url"         content="{{ url()->current() }}">
+    <meta property="og:locale"      content="es_ES">
+
+    {{-- Twitter Card --}}
+    <meta name="twitter:card"        content="summary_large_image">
+    <meta name="twitter:title"       content="{{ $fullTitle }}">
+    <meta name="twitter:description" content="{{ $pageDescription }}">
+    <meta name="twitter:image"       content="{{ $pageImage }}">
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="font-sans bg-white text-gray-900 antialiased min-h-screen flex flex-col">

@@ -3,6 +3,7 @@
 <x-app-layout>
 @section('title', $event->name)
 @section('description', $event->description ? Str::limit($event->description, 160) : $event->name . ' — ' . $event->venue . ', ' . $event->municipality->name)
+@if($event->cover_image)@section('og_image', asset('storage/' . $event->cover_image))@endif
 
 {{-- Hero image --}}
 <div class="relative h-56 md:h-80 bg-gray-100 overflow-hidden">

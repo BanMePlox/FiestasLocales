@@ -3,6 +3,7 @@
 <x-app-layout>
 @section('title', $festival->name)
 @section('description', $festival->short_description ?? Str::limit($festival->description, 160))
+@if($festival->cover_image)@section('og_image', asset('storage/' . $festival->cover_image))@endif
 
 {{-- Hero image --}}
 <div class="relative h-56 md:h-80 bg-gray-100 overflow-hidden">

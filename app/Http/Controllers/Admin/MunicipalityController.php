@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\UpdateMunicipalityRequest;
+use App\Models\Comarca;
 use App\Models\Municipality;
 use App\Models\Province;
 use Illuminate\Http\Request;
@@ -12,16 +13,21 @@ class MunicipalityController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Municipality::with('province')->withCount('festivals');
+        $query = Municipality::with(['province', 'comarca'])->withCount('festivals');
 
         if ($request->filled('province_id')) {
             $query->where('province_id', $request->province_id);
         }
 
-        $municipalities = $query->orderBy('name')->paginate(30);
-        $provinces      = Province::orderBy('name')->get();
+        if ($request->filled('comarca_id')) {
+            $query->where('comarca_id', $request->comarca_id);
+        }
 
-        return view('admin.municipalities.index', compact('municipalities', 'provinces'));
+        $municipalities = $query->orderBy('name')->paginate(30)->withQueryString();
+        $provinces      = Province::orderBy('name')->get();
+        $comarcas       = Comarca::orderBy('name')->get();
+
+        return view('admin.municipalities.index', compact('municipalities', 'provinces', 'comarcas'));
     }
 
     public function edit(Municipality $municipality)
