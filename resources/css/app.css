@@ -1,0 +1,54 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    body {
+        @apply bg-white text-gray-900 antialiased;
+    }
+
+    ::selection {
+        @apply bg-accent-subtle text-accent-text;
+    }
+}
+
+@layer components {
+    /* Buttons */
+    .btn {
+        @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-medium rounded-md transition-all focus:outline-none focus:ring-2 focus:ring-offset-2;
+    }
+    .btn-primary {
+        @apply btn bg-gray-950 text-white hover:bg-gray-800 focus:ring-gray-900;
+    }
+    .btn-accent {
+        @apply btn bg-accent text-white hover:bg-accent-hover focus:ring-accent;
+    }
+    .btn-ghost {
+        @apply btn bg-transparent text-gray-700 hover:bg-gray-100 focus:ring-gray-300;
+    }
+    .btn-outline {
+        @apply btn border border-gray-300 text-gray-700 hover:border-gray-500 hover:text-gray-900 focus:ring-gray-300;
+    }
+
+    /* Cards */
+    .card {
+        @apply bg-white rounded-lg border border-gray-200 overflow-hidden transition-shadow hover:shadow-md;
+    }
+
+    /* Form inputs */
+    .form-input-fl {
+        @apply w-full rounded-md border-gray-300 text-sm text-gray-900 placeholder-gray-400 focus:border-gray-500 focus:ring-gray-500;
+    }
+
+    /* Badges */
+    .badge {
+        @apply inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium;
+    }
+
+    /* Section label — small caps label above a title */
+    .section-label {
+        @apply text-xs font-semibold tracking-widest uppercase text-gray-400 mb-2;
+    }
+}
