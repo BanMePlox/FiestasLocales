@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -11,7 +12,7 @@ use Spatie\Sluggable\SlugOptions;
 
 class Event extends Model
 {
-    use HasSlug, SoftDeletes;
+    use HasFactory, HasSlug, SoftDeletes;
 
     protected $fillable = [
         'municipality_id',
